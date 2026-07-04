@@ -10,7 +10,5 @@ class CatRepository {
         return RetrofitClient
             .api
             .buscarGato()[0]
-
     }
-
 }
