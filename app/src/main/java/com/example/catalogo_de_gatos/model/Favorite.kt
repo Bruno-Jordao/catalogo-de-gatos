@@ -1,6 +1,6 @@
 package com.example.catalogo_de_gatos.model
 
-class Favorite(
+data class Favorite(
     val id: String? = null,
     val catId: String,
     val imageUrl: String,

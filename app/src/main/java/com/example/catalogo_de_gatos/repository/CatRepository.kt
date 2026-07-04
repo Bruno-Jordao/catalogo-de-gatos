@@ -6,9 +6,8 @@ import com.example.catalogo_de_gatos.model.Cat
 class CatRepository {
 
     suspend fun buscarGato(): Cat {
-
         return RetrofitClient
-            .api
+            .catApi
             .buscarGato()[0]
     }
 }

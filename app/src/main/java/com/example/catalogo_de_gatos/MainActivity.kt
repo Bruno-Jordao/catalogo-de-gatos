@@ -4,56 +4,61 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.catalogo_de_gatos.ui.theme.CatalogodegatosTheme
+import androidx.navigation.compose.*
+import com.example.catalogo_de_gatos.screens.FavoritesScreen
 import com.example.catalogo_de_gatos.screens.HomeScreen
+import com.example.catalogo_de_gatos.ui.theme.CatalogodegatosTheme
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
+
         enableEdgeToEdge()
+
         setContent {
 
-            CatalogoDeGatosTheme {
+            CatalogodegatosTheme {
 
-                Surface(
-
-                    modifier = Modifier.fillMaxSize(),
-
-                    color = MaterialTheme.colorScheme.background
-
-                ) {
-
-                    HomeScreen()
-
-                }
+                AppNavigation()
 
             }
 
         }
+
     }
+
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+fun AppNavigation() {
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    CatalogodegatosTheme {
-        Greeting("Android")
+    val navController = rememberNavController()
+
+    NavHost(
+
+        navController = navController,
+
+        startDestination = "home"
+
+    ) {
+
+        composable("home") {
+
+            HomeScreen(navController)
+
+        }
+
+        composable("favorites") {
+
+            FavoritesScreen(navController)
+
+        }
+
     }
+
 }
