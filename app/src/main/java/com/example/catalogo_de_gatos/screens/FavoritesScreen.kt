@@ -16,121 +16,174 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun FavoritesScreen(
-
     navController: NavController
-
 ) {
 
-    val repository = remember {
-
-        FavoriteRepository()
-
-    }
+    val repository = remember { FavoriteRepository() }
+    val scope = rememberCoroutineScope()
 
     var favorites by remember {
-
         mutableStateOf<List<Favorite>>(emptyList())
-
     }
 
-    //val scope = rememberCoroutineScope()
+    fun atualizarLista() {
+        scope.launch {
+            favorites = repository.listarFavoritos()
+        }
+    }
 
     LaunchedEffect(Unit) {
-
-        favorites = repository.listarFavoritos()
-
+        atualizarLista()
     }
 
-    Column(
-
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
-
-    ) {
-
-        Text(
-
-            text = "Favoritos",
-
-            style = MaterialTheme.typography.headlineMedium
-
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        LazyColumn {
-
-            items(favorites) { favorite ->
-
-                FavoriteItem(favorite)
-
-            }
-
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Button(
-
-            onClick = {
-
-                navController.popBackStack()
-
-            }
-
-        ) {
-
-            Text("Voltar")
-
-        }
-
-    }
-
-}
-@Composable
-fun FavoriteItem(
-
-    favorite: Favorite
-
-) {
-
-    Card(
-
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 10.dp)
-
     ) {
 
         Column(
-
-            modifier = Modifier.padding(12.dp),
-
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 100.dp),
             horizontalAlignment = Alignment.CenterHorizontally
+        ) {
 
+            Spacer(modifier = Modifier.height(25.dp))
+
+            Text(
+                text = "Favoritos",
+                style = MaterialTheme.typography.headlineMedium
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+
+                items(favorites) { favorite ->
+
+                    FavoriteCard(
+                        favorite = favorite,
+                        repository = repository,
+                        atualizarLista = {
+                            atualizarLista()
+                        }
+                    )
+                }
+            }
+        }
+
+        Button(
+            onClick = {
+                navController.popBackStack()
+            },
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 38.dp)
+                .fillMaxWidth(0.6f)
+                .height(50.dp)
+        ) {
+            Text("Voltar")
+        }
+    }
+}
+
+@Composable
+fun FavoriteCard(
+
+    favorite: Favorite,
+
+    repository: FavoriteRepository,
+
+    atualizarLista: () -> Unit
+
+) {
+
+    var observacao by remember {
+        mutableStateOf(favorite.note)
+    }
+
+    val scope = rememberCoroutineScope()
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(330.dp)
+    ) {
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceEvenly
         ) {
 
             AsyncImage(
-
                 model = favorite.imageUrl,
-
                 contentDescription = null,
-
-                modifier = Modifier.size(220.dp)
-
+                modifier = Modifier.size(160.dp)
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Text(
-
-                text = favorite.note
-
+            OutlinedTextField(
+                value = observacao,
+                onValueChange = {
+                    observacao = it
+                },
+                label = {
+                    Text("Observação")
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(72.dp),
+                minLines = 2,
+                maxLines = 2
             )
 
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(top = 15.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+
+                Button(
+                    onClick = {
+                        scope.launch {
+
+                            repository.atualizarFavorito(
+                                Favorite(
+                                    id = favorite.id,
+                                    catId = favorite.catId,
+                                    imageUrl = favorite.imageUrl,
+                                    note = observacao
+                                )
+                            )
+
+                            atualizarLista()
+                        }
+                    },
+                    modifier = Modifier.width(120.dp)
+                ) {
+                    Text("Salvar")
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Button(
+                    onClick = {
+                        scope.launch {
+                            repository.excluirFavorito(favorite.id!!)
+                            atualizarLista()
+                        }
+                    },
+                    modifier = Modifier.width(120.dp)
+                ) {
+                    Text("Excluir")
+                }
+            }
         }
-
     }
-
 }

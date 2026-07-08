@@ -36,6 +36,7 @@ fun HomeScreen(
     }
 
     val scope = rememberCoroutineScope()
+
     LaunchedEffect(Unit) {
         cat = catRepository.buscarGato()
     }
@@ -43,109 +44,85 @@ fun HomeScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(20.dp),
-
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-
+            .padding(60.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+        Spacer(modifier = Modifier.height(30.dp))
 
         Text(
             text = "Catálogo de Gatos",
             style = MaterialTheme.typography.headlineMedium
         )
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(45.dp))
 
         cat?.let {
 
             AsyncImage(
                 model = it.url,
                 contentDescription = null,
-                modifier = Modifier.size(250.dp)
+                modifier = Modifier.size(290.dp)
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(40.dp))
 
             Button(
-
                 onClick = {
-
                     scope.launch {
-
                         cat = catRepository.buscarGato()
-
                     }
-
-
-                }
-
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
             ) {
-
                 Text("Buscar outro gato")
-
             }
 
             Spacer(modifier = Modifier.height(15.dp))
 
             Button(
-
                 onClick = {
-
                     scope.launch {
-
                         cat?.let {
 
                             favoriteRepository.salvarFavorito(
-
                                 Favorite(
-
                                     catId = it.id,
-
                                     imageUrl = it.url,
-
-                                    note = "Muito fofo"
-
+                                    note = "Gato foda!"
                                 )
-
                             )
 
                             mensagem = "Favorito salvo!"
-
+                            cat = catRepository.buscarGato()
                         }
-
                     }
-
-                }
-
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
             ) {
-
                 Text("Favoritar")
-
             }
-
         }
 
         Spacer(modifier = Modifier.height(20.dp))
 
         Button(
-
             onClick = {
-
                 navController.navigate("favorites")
-
-            }
-
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
         ) {
-
             Text("Ver Favoritos")
-
         }
 
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(mensagem)
-
     }
-
 }

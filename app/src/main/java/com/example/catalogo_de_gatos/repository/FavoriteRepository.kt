@@ -30,5 +30,4 @@ class FavoriteRepository {
     ) {
         RetrofitClient.favoriteApi.deleteFavorite(id)
     }
-
 }
